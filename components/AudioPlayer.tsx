@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { PlayIcon, PauseIcon, SpinnerIcon } from './icons';
 import { GoogleGenAI, Modality } from "@google/genai";
@@ -126,7 +127,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ title, waveformColor, buttonC
     }
 
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY as string});
+        // FIX: Use process.env.API_KEY and initialize GoogleGenAI as per guidelines. This resolves the 'import.meta.env' error.
+        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
@@ -141,12 +143,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ title, waveformColor, buttonC
 
   const handleTogglePlay = async () => {
     if (isLoading || !isEnabled) return;
-
-    if (!process.env.API_KEY) {
-      alert("API Key is not configured. Please set up your environment variables.");
-      return;
-    }
     
+    // FIX: Removed local API key handling to use process.env.API_KEY directly, as per guidelines. This resolves the 'import.meta.env' error.
     if (!audioContextRef.current) {
       try {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
@@ -171,7 +169,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ title, waveformColor, buttonC
           }
           generatedScriptRef.current = script;
 
-          const ai = new GoogleGenAI({apiKey: process.env.API_KEY as string});
+          const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
           const response = await ai.models.generateContent({
             model: "gemini-2.5-flash-preview-tts",
             contents: [{ parts: [{ text: `Say with a calm, gentle, and reassuring voice: ${script}` }] }],
